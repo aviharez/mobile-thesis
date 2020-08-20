@@ -21,6 +21,8 @@ import LottieView from 'lottie-react-native';
 
 import API from './src/util/Api'
 
+import ReceiveSharingIntent from 'react-native-receive-sharing-intent';
+
 const {width: WIDTH} = Dimensions.get('window').width;
 
 const App = () => {
@@ -35,29 +37,19 @@ const App = () => {
 
   useEffect(() => {
     SplashScreen.hide()
-
-    Linking.getInitialURL().then((url) => {
-      // if your app was launched from the share you will get the text
-      // else url will be null
-      if (url) {
-        console.log('shared string/text is ', url);
-        setTweetUrl(url)
+    ReceiveSharingIntent.getReceivedFiles(files => {
+      if (files) {
+        console.log(files[0].weblink)
+        setTweetUrl(files[0].weblink)
       }
-    })
-
-    // Linking.addEventListener('url',(url)=>{ 
-    //   console.log('this is the url: ',url);
-    // });
-
-    // const getUrlAsync = async () => {
-    //   // Get the deep link used to open the app
-    //   const initialUrl = await Linking.getInitialURL();
-    //   console.log(initialUrl)
-    //   console.log("masuk sini")
-    //   setTweetUrl(initialUrl)
-    // };
-
-    // getUrlAsync()
+    }, 
+    (error) =>{
+      console.log(error);
+    });
+    
+    return () => {
+      ReceiveSharingIntent.clearReceivedFiles();
+    }
 
   }, [responData, isProcessing]);
 
